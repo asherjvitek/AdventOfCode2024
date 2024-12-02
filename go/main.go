@@ -1,23 +1,14 @@
 package main
 
-import (
-	"fmt"
-	"os"
-)
-
-func check(err error) {
-	if err != nil {
-		fmt.Println(err)
-		panic(err)
-	}
-}
+import "fmt"
 
 func main() {
-	path := "./inputs/day1.txt"
-	dat, err := os.ReadFile(path)
+	path := "./inputs/day2.txt"
+	lines, err := readLines(path)
 
 	check(err)
 
-	// day1_part1(dat)
-	day1Part2(dat)
+    res := day2Part2(lines)
+
+    fmt.Println(res)
 }

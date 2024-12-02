@@ -7,12 +7,7 @@ import (
 	"strings"
 )
 
-func day1Part2(dat []byte) {
-    data := string(dat)
-
-	// fmt.Println(data)
-
-	lines := strings.Split(data, "\n")
+func day1Part2(lines []string) {
 	len := len(lines) - 1
 
 	left := make([]int, len)
@@ -22,7 +17,7 @@ func day1Part2(dat []byte) {
 		line := lines[i]
 		parts := strings.Split(line, "   ")
 
-        // fmt.Printf("%s, %s\n", parts[0], parts[1])
+        fmt.Printf("%s, %s\n", parts[0], parts[1])
 		numLeft, err := strconv.Atoi(parts[0])
 
 		check(err)
@@ -55,12 +50,7 @@ func day1Part2(dat []byte) {
 
 }
 
-func day1Part1(dat []byte) {
-    data := string(dat)
-
-	// fmt.Println(data)
-
-	lines := strings.Split(data, "\n")
+func day1Part1(lines []string) {
 	len := len(lines) - 1
 
 	left := make([]int, len)
