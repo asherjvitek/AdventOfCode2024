@@ -28,17 +28,19 @@ func readLines(path string) ([]string, error) {
 
 	for err == nil {
 		var (
-			line     []byte
+			line, ln     []byte
 			isPrefix bool = true
 		)
 
 		for isPrefix && err == nil {
-			line, isPrefix, err = r.ReadLine()
+			ln, isPrefix, err = r.ReadLine()
 
             if err == nil {
-                lines = append(lines, string(line))
+                line = append(line, ln...)
             }
 		}
+
+        lines = append(lines, string(line))
 	}
 
 	return lines, nil

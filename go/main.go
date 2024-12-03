@@ -3,12 +3,16 @@ package main
 import "fmt"
 
 func main() {
-	path := "./inputs/day2.txt"
+	path := "./inputs/day3.txt"
 	lines, err := readLines(path)
+
+    // for _, line := range lines {
+    //     fmt.Println(line)
+    // }
 
 	check(err)
 
-    res := day2Part2(lines)
+    res := day3Part1(lines)
 
     fmt.Println(res)
 }
