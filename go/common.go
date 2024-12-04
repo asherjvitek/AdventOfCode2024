@@ -40,7 +40,10 @@ func readLines(path string) ([]string, error) {
             }
 		}
 
-        lines = append(lines, string(line))
+
+        if err == nil {
+            lines = append(lines, string(line))
+        }
 	}
 
 	return lines, nil

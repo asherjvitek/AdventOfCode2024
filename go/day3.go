@@ -48,7 +48,3 @@ func day3Part1(lines []string) int64 {
 
 	return result
 }
-
-func day3Part2() {
-
-}
