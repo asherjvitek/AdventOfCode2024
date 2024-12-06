@@ -48,3 +48,14 @@ func readLines(path string) ([]string, error) {
 
 	return lines, nil
 }
+
+func toRuneSlice(lines []string) [][]rune {
+
+    var res = make([][]rune, len(lines), len(lines))
+
+    for i, line := range lines {
+        res[i] = []rune(line)
+    }
+
+    return res
+}
