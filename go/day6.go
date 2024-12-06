@@ -10,28 +10,81 @@ type point struct {
 	y int
 }
 
+type history struct {
+	point     point
+	direction direction
+}
+
+func day6Part2(lines []string) int {
+	res := 0
+	srcGrid := toRuneSlice(lines)
+	printGrid(srcGrid)
+
+	pos, error := getStartingPos(srcGrid)
+
+	if error != nil {
+		panic(error)
+	}
+
+	for y := 0; y < len(srcGrid); y++ {
+		for x := 0; x < len(srcGrid[y]); x++ {
+
+			if srcGrid[y][x] == '#' || srcGrid[y][x] == '^' {
+				continue
+			}
+
+			//copy the grid
+			grid := make([][]rune, len(srcGrid))
+
+			for i, line := range srcGrid {
+				grid[i] = make([]rune, len(line))
+				copy(grid[i], line)
+			}
+
+			//set current location to #
+			grid[y][x] = '#'
+
+			// printGrid(grid)
+
+			h := make(map[history]int)
+
+			pos := point{y: pos.y, x: pos.x}
+			direction := direction{x: 0, y: -1}
+
+			for isInGrid(pos, grid) {
+				if checkDest(grid, pos, direction) {
+					move(grid, &pos, direction)
+					history := history{point: pos, direction: direction}
+					h[history]++
+					hist := h[history]
+
+					if hist > 1 {
+						res++
+						// printGrid(grid)
+						break
+					}
+				} else {
+					rotate(&direction)
+				}
+			}
+		}
+	}
+
+	return res
+}
+
 func day6Part1(lines []string) int {
 	grid := toRuneSlice(lines)
 
-	pos := point{x: -1, y: -1}
+	pos, error := getStartingPos(grid)
+
+	if error != nil {
+		panic(error)
+	}
+
 	direction := direction{x: 0, y: -1}
 
 	printGrid(grid)
-
-	for y := 0; y < len(grid); y++ {
-		for x := 0; x < len(grid[y]); x++ {
-			r := lines[y][x]
-
-			if r == '^' {
-				pos = point{x: x, y: y}
-				break
-			}
-		}
-
-		if pos.x != -1 {
-			break
-		}
-	}
 
 	for isInGrid(pos, grid) {
 		if checkDest(grid, pos, direction) {
@@ -42,7 +95,7 @@ func day6Part1(lines []string) int {
 
 	}
 
-    fmt.Println()
+	fmt.Println()
 	printGrid(grid)
 
 	res := 0
@@ -60,12 +113,14 @@ func day6Part1(lines []string) int {
 }
 
 func printGrid(grid [][]rune) {
+	fmt.Println("----------------------------------------------------")
 	for y := 0; y < len(grid); y++ {
 		for x := 0; x < len(grid[y]); x++ {
 			fmt.Printf("%c", grid[y][x])
 		}
 		fmt.Printf("\n")
 	}
+	fmt.Println("----------------------------------------------------")
 }
 
 func isInGrid(pos point, grid [][]rune) bool {
@@ -111,4 +166,19 @@ func rotate(direction *direction) {
 		direction.x = 0
 		direction.y = -1
 	}
+}
+
+func getStartingPos(grid [][]rune) (point, error) {
+	for y := 0; y < len(grid); y++ {
+		for x := 0; x < len(grid[y]); x++ {
+			r := grid[y][x]
+
+			if r == '^' {
+				return point{x: x, y: y}, nil
+			}
+		}
+	}
+
+	return point{}, fmt.Errorf("No Starting Position")
+
 }

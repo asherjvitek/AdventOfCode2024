@@ -12,7 +12,7 @@ func main() {
 
 	check(err)
 
-    res := day6Part1(lines)
+    res := day6Part2(lines)
 
     fmt.Println(res)
 }
