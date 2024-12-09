@@ -6,8 +6,8 @@ import (
 )
 
 type point struct {
-	x int
 	y int
+	x int
 }
 
 type history struct {
