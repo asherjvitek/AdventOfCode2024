@@ -3,7 +3,7 @@ package main
 import "fmt"
 
 func main() {
-	path := "./inputs/day11.txt"
+	path := "./inputs/day12.txt"
 	lines, err := readLines(path)
 
     // for _, line := range lines {
@@ -13,7 +13,7 @@ func main() {
 
 	check(err)
 
-    res := day11(lines)
+    res := day12(lines)
 
     fmt.Println(res)
 }
