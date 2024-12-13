@@ -13,25 +13,59 @@ func day12(lines []string) int {
 
 	for y := 0; y < len(lines); y++ {
 		for x := 0; x < len(lines[y]); x++ {
-			point := point{y, x}
-
-			if tracked[point] {
+			if tracked[point{y, x}] {
 				continue
 			}
 
 			r := rune(lines[y][x])
 
 			plot := plot{area: 0, perimeter: 0}
+			perimeterPoints := make(map[point]int)
 
-            xTracked := make(map[float32]bool)
-            yTracked := make(map[float32]bool)
+			calculatePlot(lines, y, x, r, &plot, &tracked, &perimeterPoints)
 
-			calculatePlot(lines, y, x, r, &plot, &tracked, &xTracked, &yTracked)
+			p := 0
+            corner := make(map[point]int)
 
-			fmt.Println(string(r), plot.area, len(xTracked), len(yTracked))
-			res += plot.area * (len(xTracked) + len(yTracked))
+			// fmt.Println(perimeterPoints)
 
-            fmt.Println(xTracked, yTracked)
+			for k, v := range perimeterPoints {
+
+				if v > 1 {
+                    corner[k] += v
+                    continue
+				}
+
+				checkSide := func(p point, c point) {
+					if perimeterPoints[p] == 1 {
+                        corner[c] = 1
+					}
+				}
+
+                //f me.... this is double finding corners....
+                checkSide(point{y: k.y - 1, x: k.x + 1}, point{y: k.y - 1, x: k.x})
+				checkSide(point{y: k.y - 1, x: k.x - 1}, point{y: k.y - 1, x: k.x})
+				checkSide(point{y: k.y + 1, x: k.x + 1}, point{y: k.y + 1, x: k.x})
+				checkSide(point{y: k.y + 1, x: k.x - 1}, point{y: k.y + 1, x: k.x})
+
+				p += v
+			}
+
+            sides := 0
+
+            // fmt.Println(corner)
+
+
+            for k, v := range corner {
+
+                fmt.Println(k)
+                sides += v
+            }
+
+			fmt.Println(string(r), plot.area, p, sides)
+			res += plot.area * p
+
+			// fmt.Println(perimeterPoints)
 
 		}
 	}
@@ -41,19 +75,19 @@ func day12(lines []string) int {
 	return res
 }
 
-func calculatePlot(lines []string, y int, x int, r rune, p *plot, tracked *map[point]bool, xTracked *map[float32]bool, yTracked *map[float32]bool) {
+func calculatePlot(lines []string, y int, x int, r rune, p *plot, tracked *map[point]bool, perimeterPoints *map[point]int) {
 
 	(*tracked)[point{y, x}] = true
 
-	c := func(lines []string, y int, x int, xy *map[float32]bool, t float32) {
+	c := func(lines []string, y int, x int, pp *map[point]int) {
 
 		if y < 0 || y >= len(lines) || x < 0 || x >= len(lines[y]) {
-            (*xy)[t] = true
+			(*pp)[point{y, x}]++
 			return
 		}
 
 		if r != rune(lines[y][x]) {
-            (*xy)[t] = true
+			(*pp)[point{y, x}]++
 			return
 		}
 
@@ -61,13 +95,13 @@ func calculatePlot(lines []string, y int, x int, r rune, p *plot, tracked *map[p
 			return
 		}
 
-		calculatePlot(lines, y, x, r, p, tracked, xTracked, yTracked)
+		calculatePlot(lines, y, x, r, p, tracked, pp)
 	}
 
-	c(lines, y-1, x, yTracked, float32(y)-0.1)
-	c(lines, y, x-1, xTracked, float32(x)-0.1)
-	c(lines, y, x+1, xTracked, float32(x)+0.1)
-	c(lines, y+1, x, yTracked, float32(y)+0.1)
+	c(lines, y-1, x, perimeterPoints)
+	c(lines, y, x-1, perimeterPoints)
+	c(lines, y, x+1, perimeterPoints)
+	c(lines, y+1, x, perimeterPoints)
 
 	p.area++
 }
