@@ -5,6 +5,7 @@ import "fmt"
 type plot struct {
 	area      int
 	perimeter int
+	locations map[point]bool
 }
 
 func day12(lines []string) int {
@@ -19,51 +20,57 @@ func day12(lines []string) int {
 
 			r := rune(lines[y][x])
 
-			plot := plot{area: 0, perimeter: 0}
-			perimeterPoints := make(map[point]int)
+			plot := plot{area: 0, perimeter: 0, locations: make(map[point]bool)}
 
-			calculatePlot(lines, y, x, r, &plot, &tracked, &perimeterPoints)
+			calculatePlot(lines, y, x, r, &plot, &tracked)
 
-			p := 0
-            corner := make(map[point]int)
+			sides := 0
 
-			// fmt.Println(perimeterPoints)
+			for k := range plot.locations {
+				x := k.x
+				y := k.y
 
-			for k, v := range perimeterPoints {
-
-				if v > 1 {
-                    corner[k] += v
-                    continue
+				isOutsideCorner := func(yAdjust int, xAdjust int) bool {
+					return !plot.locations[point{y: y + yAdjust, x: x}] &&
+						!plot.locations[point{y: y, x: x + xAdjust}]
 				}
 
-				checkSide := func(p point, c point) {
-					if perimeterPoints[p] == 1 {
-                        corner[c] = 1
-					}
+				isInsideCorner := func(yAdjust int, xAdjust int) bool {
+					return plot.locations[point{y: y + yAdjust, x: x}] &&
+						plot.locations[point{y: y, x: x + xAdjust}] &&
+						!plot.locations[point{y: y + yAdjust, x: x + xAdjust}]
+
 				}
 
-                //f me.... this is double finding corners....
-                checkSide(point{y: k.y - 1, x: k.x + 1}, point{y: k.y - 1, x: k.x})
-				checkSide(point{y: k.y - 1, x: k.x - 1}, point{y: k.y - 1, x: k.x})
-				checkSide(point{y: k.y + 1, x: k.x + 1}, point{y: k.y + 1, x: k.x})
-				checkSide(point{y: k.y + 1, x: k.x - 1}, point{y: k.y + 1, x: k.x})
+				if isOutsideCorner(-1, 1) {
+					sides++
+				}
+				if isOutsideCorner(-1, -1) {
+					sides++
+				}
+				if isOutsideCorner(1, -1) {
+					sides++
+				}
+				if isOutsideCorner(1, 1) {
+					sides++
+				}
 
-				p += v
+				if isInsideCorner(-1, 1) {
+					sides++
+				}
+				if isInsideCorner(-1, -1) {
+					sides++
+				}
+				if isInsideCorner(1, -1) {
+					sides++
+				}
+				if isInsideCorner(1, 1) {
+					sides++
+				}
 			}
 
-            sides := 0
-
-            // fmt.Println(corner)
-
-
-            for k, v := range corner {
-
-                fmt.Println(k)
-                sides += v
-            }
-
-			fmt.Println(string(r), plot.area, p, sides)
-			res += plot.area * p
+			// fmt.Println(string(r), plot.area, sides)
+			res += plot.area * sides
 
 			// fmt.Println(perimeterPoints)
 
@@ -75,19 +82,18 @@ func day12(lines []string) int {
 	return res
 }
 
-func calculatePlot(lines []string, y int, x int, r rune, p *plot, tracked *map[point]bool, perimeterPoints *map[point]int) {
+func calculatePlot(lines []string, y int, x int, r rune, p *plot, tracked *map[point]bool) {
 
 	(*tracked)[point{y, x}] = true
+	(*p).locations[point{y, x}] = true
 
-	c := func(lines []string, y int, x int, pp *map[point]int) {
+	c := func(lines []string, y int, x int) {
 
 		if y < 0 || y >= len(lines) || x < 0 || x >= len(lines[y]) {
-			(*pp)[point{y, x}]++
 			return
 		}
 
 		if r != rune(lines[y][x]) {
-			(*pp)[point{y, x}]++
 			return
 		}
 
@@ -95,13 +101,13 @@ func calculatePlot(lines []string, y int, x int, r rune, p *plot, tracked *map[p
 			return
 		}
 
-		calculatePlot(lines, y, x, r, p, tracked, pp)
+		calculatePlot(lines, y, x, r, p, tracked)
 	}
 
-	c(lines, y-1, x, perimeterPoints)
-	c(lines, y, x-1, perimeterPoints)
-	c(lines, y, x+1, perimeterPoints)
-	c(lines, y+1, x, perimeterPoints)
+	c(lines, y-1, x)
+	c(lines, y, x-1)
+	c(lines, y, x+1)
+	c(lines, y+1, x)
 
 	p.area++
 }
