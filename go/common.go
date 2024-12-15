@@ -6,6 +6,16 @@ import (
 	"os"
 )
 
+type point struct {
+	y int
+	x int
+}
+
+func (p1 point) add(p2 point) point {
+    return point{y: p1.y + p2.y, x: p1.x + p2.x}
+}
+
+
 func check(err error) {
 	if err != nil {
 		fmt.Println(err)

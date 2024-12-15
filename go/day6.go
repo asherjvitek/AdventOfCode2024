@@ -5,11 +5,6 @@ import (
 	// "time"
 )
 
-type point struct {
-	y int
-	x int
-}
-
 type history struct {
 	point     point
 	direction direction
