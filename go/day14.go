@@ -31,15 +31,70 @@ func (r *robot) move(maxY int, maxX int) {
 	}
 }
 
-func (r robot) withinPoints(p1 point, p2 point) int {
-	if r.position.x >= p1.x && r.position.y >= p1.y && r.position.x <= p2.x && r.position.y <= p2.y {
-		return 1
+func day14(lines []string) int {
+	robots := getRobots(lines)
+
+	maxY := 103
+	maxX := 101
+	iter := 1
+
+	for {
+		m := make(map[point]bool)
+
+		for i, robot := range robots {
+			robot.move(maxY, maxX)
+			robots[i] = robot
+			m[robot.position] = true
+		}
+
+		for k, _ := range m {
+			r1 := m[point{k.y - 1, k.x - 1}]
+			r2 := m[point{k.y - 1, k.x}]
+			r3 := m[point{k.y - 1, k.x + 1}]
+			r4 := m[point{k.y, k.x - 1}]
+			r5 := m[point{k.y, k.x + 1}]
+			r6 := m[point{k.y + 1, k.x - 1}]
+			r7 := m[point{k.y + 1, k.x}]
+			r8 := m[point{k.y + 1, k.x + 1}]
+
+			if r1 && r2 && r3 && r4 && r5 && r6 && r7 && r8 {
+				fmt.Println(iter)
+				printRobots(maxY, maxX, robots)
+                break
+			}
+		}
+
+		iter++
 	}
 
-	return 0
+	return iter
 }
 
-func day14(lines []string) int {
+func printRobots(maxY int, maxX int, robots []robot) {
+
+	fmt.Println("--------------------")
+	for y := 0; y < maxY; y++ {
+		for x := 0; x < maxX; x++ {
+			count := 0
+
+			for _, r := range robots {
+				if r.position.equals(point{y, x}) {
+					count++
+				}
+			}
+
+			if count > 0 {
+				fmt.Print(count)
+			} else {
+				fmt.Print(".")
+			}
+		}
+		fmt.Println()
+	}
+	fmt.Println("--------------------")
+}
+
+func day14_part1(lines []string) int {
 	robots := getRobots(lines)
 
 	maxY := 103
@@ -54,7 +109,7 @@ func day14(lines []string) int {
 	}
 
 	xMid := maxX / 2
-    yMid := maxY / 2
+	yMid := maxY / 2
 
 	fmt.Println("mids", xMid, yMid)
 
@@ -64,15 +119,15 @@ func day14(lines []string) int {
 	q4 := 0
 
 	for _, robot := range robots {
-	    if (robot.position.x < xMid && robot.position.y < yMid) {
-            q1++
-        } else if (robot.position.x > xMid && robot.position.y < yMid) {
-            q2++
-        } else if (robot.position.x < xMid && robot.position.y > yMid) {
-            q3++
-        } else if (robot.position.x > xMid && robot.position.y > yMid) {
-            q4++
-        }
+		if robot.position.x < xMid && robot.position.y < yMid {
+			q1++
+		} else if robot.position.x > xMid && robot.position.y < yMid {
+			q2++
+		} else if robot.position.x < xMid && robot.position.y > yMid {
+			q3++
+		} else if robot.position.x > xMid && robot.position.y > yMid {
+			q4++
+		}
 	}
 
 	fmt.Println("--------------------")
@@ -87,7 +142,7 @@ func day14(lines []string) int {
 			}
 
 			if x == xMid || yMid == y {
-                fmt.Print(" ")
+				fmt.Print(" ")
 			} else if count > 0 {
 				fmt.Print(count)
 			} else {
