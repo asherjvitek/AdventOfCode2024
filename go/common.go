@@ -15,6 +15,10 @@ func (p1 point) add(p2 point) point {
     return point{y: p1.y + p2.y, x: p1.x + p2.x}
 }
 
+func (p point) equals(p2 point) bool {
+    return p.x == p2.x && p.y == p2.y
+}
+
 
 func check(err error) {
 	if err != nil {

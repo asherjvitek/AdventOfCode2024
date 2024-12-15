@@ -42,9 +42,9 @@ func (r robot) withinPoints(p1 point, p2 point) int {
 func day14(lines []string) int {
 	robots := getRobots(lines)
 
-	maxY := 7
-	maxX := 11
-	iter := 5
+	maxY := 103
+	maxX := 101
+	iter := 100
 
 	for i := 0; i < iter; i++ {
 		for i, robot := range robots {
@@ -53,26 +53,10 @@ func day14(lines []string) int {
 		}
 	}
 
-	for _, robot := range robots {
-		fmt.Println(robot.position)
-	}
+	xMid := maxX / 2
+    yMid := maxY / 2
 
-	q1Low := point{0, 0}
-	q1High := point{y: (maxY - 1) / 2, x: (maxX-1)/2 - 1}
-
-	q2Low := point{y: 0, x: maxX - ((maxX - 1) / 2)}
-	q2High := point{y: (maxY - 1) / 2, x: maxX - 1}
-
-	q3Low := point{maxY/2 + 2, 0}
-	q3High := point{maxY - 1, maxX / 2}
-
-	q4Low := point{y: maxY/2 + 2, x: maxX/2 + 1}
-	q4High := point{maxY - 1, maxX - 1}
-
-	fmt.Println(q1Low, q1High)
-	fmt.Println(q2Low, q2High)
-	fmt.Println(q3Low, q3High)
-	fmt.Println(q4Low, q4High)
+	fmt.Println("mids", xMid, yMid)
 
 	q1 := 0
 	q2 := 0
@@ -80,13 +64,41 @@ func day14(lines []string) int {
 	q4 := 0
 
 	for _, robot := range robots {
-		q1 += robot.withinPoints(q1Low, q1High)
-		q2 += robot.withinPoints(q2Low, q2High)
-		q3 += robot.withinPoints(q3Low, q3High)
-		q4 += robot.withinPoints(q4Low, q4High)
+	    if (robot.position.x < xMid && robot.position.y < yMid) {
+            q1++
+        } else if (robot.position.x > xMid && robot.position.y < yMid) {
+            q2++
+        } else if (robot.position.x < xMid && robot.position.y > yMid) {
+            q3++
+        } else if (robot.position.x > xMid && robot.position.y > yMid) {
+            q4++
+        }
 	}
 
-    fmt.Println(q1, q2, q3, q4)
+	fmt.Println("--------------------")
+	for y := 0; y < maxY; y++ {
+		for x := 0; x < maxX; x++ {
+			count := 0
+
+			for _, r := range robots {
+				if r.position.equals(point{y, x}) {
+					count++
+				}
+			}
+
+			if x == xMid || yMid == y {
+                fmt.Print(" ")
+			} else if count > 0 {
+				fmt.Print(count)
+			} else {
+				fmt.Print(".")
+			}
+		}
+		fmt.Println()
+	}
+	fmt.Println("--------------------")
+
+	fmt.Println(q1, q2, q3, q4)
 
 	return q1 * q2 * q3 * q4
 }
