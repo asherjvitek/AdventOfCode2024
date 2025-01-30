@@ -11,6 +11,10 @@ type point struct {
 	x int
 }
 
+// func (p point) Format(f fmt.State, c rune) {
+//     f.Write([]byte(fmt.Sprintf("{y:%d x:%d}", p.y, p.x)))
+// }
+
 func (p1 point) add(p2 point) point {
     return point{y: p1.y + p2.y, x: p1.x + p2.x}
 }
