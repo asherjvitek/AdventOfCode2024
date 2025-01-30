@@ -6,44 +6,51 @@ import (
 	"strings"
 )
 
-const gridSize = 7
-const amount = 12
+const gridSize = 71
+const amount = 3000
 
 var end = point{gridSize - 1, gridSize - 1}
 
 func day18(lines []string) int {
-	points := getPoints(lines)
+	points := getPoints(lines, amount)
 	printMem(points)
-
-	for p, _ := range points {
-		fmt.Println(p.x, p.y)
-	}
 
 	track := make(map[point]int)
 
-	path := make([]point, 0)
+	findWay(points, point{0, 0}, 0, &track)
 
-	findWay(points, point{0, 0}, 0, &track, path)
+	fmt.Println("here", track[end])
 
-	fmt.Println(track[end])
+	amount2 := amount
+	for {
+		amount2++
+		points := getPoints(lines, amount2)
+		// printMem(points)
 
-	return 0
+		track := make(map[point]int)
+
+		findWay(points, point{0, 0}, 0, &track)
+
+		if track[end] == 0 {
+			fmt.Println(amount2, lines[amount2])
+			return 0
+		}
+	}
+
+	// return 0
 }
 
-func findWay(points map[point]bool, current point, count int, track *map[point]int, path []point) {
-	// fmt.Println(current)
-	if current == end {
+func findWay(points map[point]bool, current point, count int, track *map[point]int) {
+	if current == end && (*track)[current] > count {
 		(*track)[current] = count
-		fmt.Println(count+1, path)
 		return
 	}
 
-	if (*track)[current] > 0 && (*track)[current] < count {
+	if (*track)[current] > 0 && (*track)[current] <= count {
 		return
 	}
 
 	if points[current] {
-		// fmt.Println(current)
 		return
 	}
 
@@ -52,15 +59,14 @@ func findWay(points map[point]bool, current point, count int, track *map[point]i
 	}
 
 	(*track)[current] = count
-	path = append(path, current)
 
-	findWay(points, point{x: current.x - 1, y: current.y}, count+1, track, path)
-	findWay(points, point{x: current.x + 1, y: current.y}, count+1, track, path)
-	findWay(points, point{x: current.x, y: current.y - 1}, count+1, track, path)
-	findWay(points, point{x: current.x, y: current.y + 1}, count+1, track, path)
+	findWay(points, point{x: current.x - 1, y: current.y}, count+1, track)
+	findWay(points, point{x: current.x + 1, y: current.y}, count+1, track)
+	findWay(points, point{x: current.x, y: current.y - 1}, count+1, track)
+	findWay(points, point{x: current.x, y: current.y + 1}, count+1, track)
 }
 
-func getPoints(lines []string) map[point]bool {
+func getPoints(lines []string, amount int) map[point]bool {
 	points := make(map[point]bool)
 
 	for i, line := range lines {
@@ -72,7 +78,7 @@ func getPoints(lines []string) map[point]bool {
 		x, _ := strconv.Atoi(split[0])
 		y, _ := strconv.Atoi(split[1])
 
-		points[point{x, y}] = true
+		points[point{y, x}] = true
 	}
 
 	return points
@@ -81,7 +87,7 @@ func getPoints(lines []string) map[point]bool {
 func printMem(points map[point]bool) {
 	for y := 0; y < gridSize; y++ {
 		for x := 0; x < gridSize; x++ {
-			if points[point{x, y}] {
+			if points[point{y, x}] {
 				fmt.Print("#")
 			} else {
 				fmt.Print(".")
