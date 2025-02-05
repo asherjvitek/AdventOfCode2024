@@ -14,7 +14,7 @@ func main() {
 	check(err)
 
     // res, res2 := day17(lines)
-    res := day20(lines)
+    res := day20_part2(lines)
 
     fmt.Println(res)
 }

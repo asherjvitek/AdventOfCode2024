@@ -2,13 +2,42 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"slices"
 )
+
+func day20_part2(lines []string) int {
+	res := 0
+	saved := make(map[int]int)
+	path := path(lines)
+	fmt.Println(len(path))
+
+	for i, p := range path {
+		for i2, p2 := range path {
+			distance := math.Abs(float64(p.x-p2.x)) + math.Abs(float64(p.y-p2.y))
+			dist := float64(i2 - i)
+            result := int(dist-distance)
+
+			if distance < dist && distance <= 20 && result >= 100 {
+                res++
+                saved[result]++
+				// fmt.Println(p, p2, distance, res)
+			}
+		}
+
+		// break
+	}
+
+	fmt.Println(saved)
+
+	return res
+}
 
 func day20(lines []string) int {
 	res := 0
 	saved := make(map[int]int)
 	p := path(lines)
+	fmt.Println(len(p))
 
 	canCheat := func(poi point, y int, x int, i int) {
 		dest := slices.Index(p, point{poi.y + y + y, poi.x + x + x})
